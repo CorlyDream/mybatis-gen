@@ -30,6 +30,9 @@
   .left-panel, .right-panel {
     flex-grow: 1;
   }
+  .left-panel{
+    max-width: 50%;
+  }
 
   .right-panel {
     background-color: #77ee77;
