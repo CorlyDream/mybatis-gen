@@ -1,12 +1,13 @@
 function TableObject(name) {
   this.name = name;
   this.properties = [];
-  this.addProperty = function(name, type, typeDesc, isNull, defaultValue, comment, isUnsigned = false)
+  this.addProperty = function(source, name, type, typeDesc, isNull, defaultValue, comment, isUnsigned = false)
   {
     this.properties.push({
+      source: source,
       name: name,
       type: type,
-      typeDesc: typeDesc,
+      typeDesc: type+typeDesc,
       isNull: isNull,
       defaultValue: defaultValue,
       comment: comment,
@@ -33,6 +34,7 @@ var parse = {
       this.list.push(obj)
     }
     console.log(this.list)
+    return this.list
   },
   _table2Obj(name, body) {
     /**
@@ -54,7 +56,7 @@ var parse = {
         if (group[5])
           isNull = false
 
-        obj.addProperty(group[1], group[2], group[3], isNull, group[6], group[7], isUnsigned)
+        obj.addProperty(group[0], group[1], group[2], group[3], isNull, group[6], group[7], isUnsigned)
       }
     }
     return obj

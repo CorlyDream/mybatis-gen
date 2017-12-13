@@ -1,6 +1,24 @@
 <template>
   <div>
-    <textarea id="sql-code" name="sql-code" :value="value"></textarea>
+    <textarea id="sql-code" name="sql-code" >
+CREATE TABLE `typecho_users` (
+  `uid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) DEFAULT NULL COMMENT '名称',
+  `password` varchar(64) DEFAULT NULL COMMENT '密码',
+  `mail` varchar(200) DEFAULT NULL COMMENT '邮箱',
+  `url` varchar(200) DEFAULT NULL COMMENT 'url地址',
+  `screenName` varchar(32) DEFAULT NULL,
+  `created` int(10) unsigned DEFAULT '0',
+  `activated` int(10) unsigned DEFAULT '0',
+  `logged` int(10) unsigned DEFAULT '0',
+  `group` varchar(16) DEFAULT 'visitor',
+  `authCode` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`uid`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `mail` (`mail`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+// 建表语句末尾必须有分号
+    </textarea>
   </div>
 </template>
 <script>
@@ -13,33 +31,6 @@
 
   export default {
     name: "sql-editor",
-    props: {
-      value:{
-        type:String,
-        default: 'CREATE TABLE `typecho_users` (\n' +
-        '  `uid` int(10) unsigned NOT NULL AUTO_INCREMENT,\n' +
-        '  `name` varchar(32) DEFAULT NULL,\n' +
-        '  `password` varchar(64) DEFAULT NULL,\n' +
-        '  `mail` varchar(200) DEFAULT NULL,\n' +
-        '  `url` varchar(200) DEFAULT NULL,\n' +
-        '  `screenName` varchar(32) DEFAULT NULL,\n' +
-        '  `created` int(10) unsigned DEFAULT \'0\',\n' +
-        '  `activated` int(10) unsigned DEFAULT \'0\',\n' +
-        '  `logged` int(10) unsigned DEFAULT \'0\',\n' +
-        '  `group` varchar(16) DEFAULT \'visitor\',\n' +
-        '  `authCode` varchar(64) DEFAULT NULL,\n' +
-        '  PRIMARY KEY (`uid`),\n' +
-        '  UNIQUE KEY `name` (`name`),\n' +
-        '  UNIQUE KEY `mail` (`mail`)\n' +
-        ') ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;\n' +
-        '// 建表语句末尾必须有分号'
-      }
-    },
-    data() {
-      return {
-
-      }
-    },
     mounted(){
       this.init();
     },
@@ -59,8 +50,10 @@
               countries: ["name", "population", "size"]
             }}
         });
-        window.editor.on("change", function () {
-          console.log(arguments)
+        const _this = this
+        _this.$emit("blur", window.editor.getValue())
+        window.editor.on("blur", function (codeMirror, changeObj) {
+          _this.$emit("blur", codeMirror.getValue(), changeObj)
         })
 
       }
