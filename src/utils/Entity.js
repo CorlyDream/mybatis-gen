@@ -1,5 +1,6 @@
 import {toCamel} from "@/utils/StringUtil";
 
+
 var entity = {
   name:'',
   parse: function (table) {
