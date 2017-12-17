@@ -1,22 +1,48 @@
-import {toCamel} from "@/utils/StringUtil";
+import {toCamel,toJavaType} from "@/utils/StringUtil";
 
 
-var entity = {
-  name:'',
+export default {
   parse: function (table) {
-    this.name = toCamel(table.name);
-    var str = 'public class '+this.name + ' {\n';
+    var name = toCamel(table.name, true);
+    var str = 'import java.io.Serializable;\n\n' +
+      'public class '+name + ' implements Serializable {\n\n';
+    str += '    private static final long serialVersionUID = 1L;\n'
     var properties = table.properties;
-
+    var hasDateType = false;
     for (var i=0; i<properties.length; i++) {
-      var item = properties[i]
+      var item = properties[i];
       if (item.comment){
         str += '    /**\n' +
-               '     * ' + item.comment + '\n'
+               '     * ' + item.comment + '\n' +
                '     */\n'
       }
-
+      var type = toJavaType(item.type)
+      if (type == 'Date'){
+        hasDateType = true;
+      }
+      str += `    private ${type} ${toCamel(item.name)};\n\n`
+    }
+    if (hasDateType){
+      str = 'import java.util.Date;\n' + str;
     }
 
+    for(var i=0; i<properties.length; i++) {
+      var item = properties[i]
+      var type = toJavaType(item.type)
+      str += `    public void set${toCamel(item.name, true)}(${type} ${toCamel(item.name)}){\n`
+      str += `        this.${toCamel(item.name)} = ${toCamel(item.name)}\n`;
+      str += '    }\n\n'
+
+      str += `    public ${type} get${toCamel(item.name, true)}(){\n`
+      str += `        return this.${toCamel(item.name)}\n`
+      str += '    }\n\n'
+    }
+
+    str += '}'
+    return {
+      type: "java",
+      name:name,
+      str: str
+    }
   }
 }

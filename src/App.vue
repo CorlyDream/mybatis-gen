@@ -8,13 +8,20 @@
         <el-input v-model="info.entityPackage" placeholder="实体类包名"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">查询</el-button>
+        <el-button type="primary" @click="downloadZip">下载</el-button>
       </el-form-item>
     </el-form>
 
     <div class="box">
       <sql-editor class="left-panel" @blur="textAreaBlur"></sql-editor>
-      <div class="right-panel"></div>
+      <div class="right-panel">
+        <el-collapse accordion>
+          <el-collapse-item  v-for="(item,index) in parseObj" :key="index" :title="item.name + '.' + item.type">
+            <pre v-highlightjs="item.str"><code :class="item.type"></code></pre>
+          </el-collapse-item>
+        </el-collapse>
+
+      </div>
     </div>
 
     <el-dialog title="表格" :visible.sync="showTable" center>
@@ -37,7 +44,7 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="MarkDown">
-          <pre>{{markdown}}</pre>
+          <pre id="markdown">{{markdown}}</pre>
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
@@ -47,6 +54,11 @@
 <script>
   import SqlEditor from '@/components/sql-editor'
   import SqlParse from '@/utils/SqlParse'
+  import Entity from '@/utils/Entity'
+  import Mapper from '@/utils/Mapper'
+  import JSZip from 'jszip'
+  import {saveAs} from 'file-saver'
+  console.log(saveAs)
 
   export default {
     name: 'app',
@@ -62,7 +74,8 @@
           interfacePackage: "",
           xmlPackage: "",
           isToString: true
-        }
+        },
+        parseObj: []
       }
     },
     computed: {
@@ -97,6 +110,24 @@
     methods: {
       textAreaBlur(newValue, changeObj) {
         this.list = SqlParse.parse(newValue)
+        this.parseObj = []
+        this.list.forEach((item) => {
+          this.parseObj.push(Entity.parse(item))
+          this.parseObj.push(Mapper.parseJava(item))
+          this.parseObj.push(Mapper.parseXML(item, "test", "test"))
+        })
+        // todo test
+      },
+      downloadZip(){
+        var zip = new JSZip();
+        this.parseObj.forEach((item)=>{
+          zip.file(item.name+'.'+item.type, item.str)
+        })
+        zip.generateAsync({type:"blob"}).then(function(content) {
+          // `
+          saveAs(content, "mybatis-gen.zip");
+        });
+
       }
     }
   }
@@ -116,15 +147,25 @@
     flex-direction: column;
   }
 
+
   .left-panel, .right-panel {
     flex-grow: 1;
   }
 
-  .left-panel {
-    max-width: 50%;
+  .left-panel{
+    max-width: 40%;
+  }
+  .right-panel{
+    max-width: 60%;
+    overflow-x: hidden;
   }
 
   .right-panel {
     background-color: #77ee77;
+  }
+  pre code{
+    font-size: 12px;
+    line-height: 12px;
+    overflow-x: scroll;
   }
 </style>
