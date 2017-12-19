@@ -2,11 +2,12 @@ import {toCamel,toJavaType} from "@/utils/StringUtil";
 
 
 export default {
-  parse: function (table) {
+  parse: function (table, entityPkg) {
     var name = toCamel(table.name, true);
-    var str = 'import java.io.Serializable;\n\n' +
-      'public class '+name + ' implements Serializable {\n\n';
-    str += '    private static final long serialVersionUID = 1L;\n'
+    var str = `package ${entityPkg};\n\n` +
+      'import java.io.Serializable;\n\n' +
+      'public class '+name + ' implements Serializable {\n\n' +
+      '    private static final long serialVersionUID = 1L;\n';
     var properties = table.properties;
     var hasDateType = false;
     for (var i=0; i<properties.length; i++) {
@@ -42,7 +43,8 @@ export default {
     return {
       type: "java",
       name:name,
-      str: str
+      str: str,
+      pkg: entityPkg
     }
   }
 }

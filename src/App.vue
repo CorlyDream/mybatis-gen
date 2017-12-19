@@ -5,7 +5,10 @@
         <el-button @click="showTable=true">表格</el-button>
       </el-form-item>
       <el-form-item label="实体类包名">
-        <el-input v-model="info.entityPackage" placeholder="实体类包名"></el-input>
+        <el-input v-model="info.entityPkg" placeholder="实体类包名" @blur="reparse"></el-input>
+      </el-form-item>
+      <el-form-item label="mapper包名">
+        <el-input v-model="info.mapperPkg" placeholder="mapper包名" @blur="reparse"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="downloadZip">下载</el-button>
@@ -70,9 +73,8 @@
         list: [],
         showTable: false,
         info: {
-          entityPackage: "",
-          interfacePackage: "",
-          xmlPackage: "",
+          entityPkg: "test",
+          mapperPkg: "test",
           isToString: true
         },
         parseObj: []
@@ -109,19 +111,23 @@
     },
     methods: {
       textAreaBlur(newValue, changeObj) {
-        this.list = SqlParse.parse(newValue)
+        this.list = SqlParse.parse(newValue);
+        this.reparse();
+      },
+      reparse(){
         this.parseObj = []
         this.list.forEach((item) => {
-          this.parseObj.push(Entity.parse(item))
-          this.parseObj.push(Mapper.parseJava(item))
-          this.parseObj.push(Mapper.parseXML(item, "test", "test"))
+          this.parseObj.push(Entity.parse(item, this.info.entityPkg))
+          this.parseObj.push(Mapper.parseJava(item, this.info.entityPkg, this.info.mapperPkg));
+          this.parseObj.push(Mapper.parseXML(item, this.info.entityPkg, this.info.mapperPkg));
         })
-        // todo test
       },
       downloadZip(){
         var zip = new JSZip();
         this.parseObj.forEach((item)=>{
-          zip.file(item.name+'.'+item.type, item.str)
+          var path = item.pkg.split(".").join("/");
+          var folder = zip.folder(path);
+          folder.file(item.name+'.'+item.type, item.str)
         })
         zip.generateAsync({type:"blob"}).then(function(content) {
           // `

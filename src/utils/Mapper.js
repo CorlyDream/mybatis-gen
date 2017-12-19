@@ -1,10 +1,12 @@
 import {toCamel,toJavaType} from "@/utils/StringUtil";
 
 export default {
-  parseJava(table){
+  parseJava(table, entityPkg, mapperPkg){
     var name = toCamel(table.name, true);
     var mapperName = name +'Mapper';
-    var str = 'import java.util.List;\n\n';
+    var str = `package ${mapperPkg};\n\n`;
+    str += 'import java.util.List;\n';
+    str += `import ${entityPkg}.${name};\n\n`;
 
     str += `public interface ${mapperName}{\n\n`;
     str += `    int insertSelective(${name} ${toCamel(table.name)});\n\n`;
@@ -13,10 +15,11 @@ export default {
     return {
       type: 'java',
       name: mapperName,
-      str: str
+      str: str,
+      pkg: mapperPkg
     }
   },
-  parseXML(table, mapperPkg, entityPkg){
+  parseXML(table, entityPkg, mapperPkg){
     var name = toCamel(table.name, true)
     var mapperName = name + "Mapper";
     var str = '<?xml version="1.0" encoding="UTF-8"?>\n' +
@@ -59,7 +62,8 @@ export default {
     return {
       type: "xml",
       name: mapperName,
-      str: str
+      str: str,
+      pkg: mapperPkg
     }
 
 
