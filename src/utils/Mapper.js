@@ -43,7 +43,7 @@ export default {
     str += '\n  </sql>\n'
 
     str += `  <insert id="insertSelective">\n`;
-    str += `    insert into ${table.name}\n`;
+    str += `    INSERT INTO ${table.name}\n`;
     str += '    <trim prefix="(" suffix=")" suffixOverrides=",">\n';
     table.properties.forEach((item) => {
       str += `      <if test="${toCamel(item.name)} != null"> ${item.name},</if>\n`;
@@ -51,7 +51,7 @@ export default {
     str += '    </trim>\n'
     str += '    <trim prefix="values (" suffix=")" suffixOverrides=",">\n';
     table.properties.forEach((item) => {
-      str += `      <if test="${toCamel(item.name)} != null"> #{${toCamel(table.name)}},</if>\n`;
+      str += `      <if test="${toCamel(item.name)} != null"> #{${toCamel(item.name)}},</if>\n`;
     })
     str += '    </trim>\n';
     str += '  </insert>\n';
