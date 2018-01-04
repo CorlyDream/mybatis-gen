@@ -3,11 +3,15 @@ function TableObject(name) {
   this.properties = [];
   this.addProperty = function(source, name, type, typeDesc, isNull, defaultValue, comment, isUnsigned = false)
   {
+    var tmpDesc = type;
+    if (typeDesc){
+      tmpDesc += typeDesc;
+    }
     this.properties.push({
       source: source,
       name: name,
       type: type,
-      typeDesc: type+typeDesc,
+      typeDesc: tmpDesc,
       isNull: isNull,
       defaultValue: defaultValue,
       comment: comment,
