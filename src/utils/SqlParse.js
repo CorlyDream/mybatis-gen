@@ -22,12 +22,13 @@ function TableObject(name) {
 
 var parse = {
   regexCreate: new RegExp('create\\s+table\\s+`?(\\w+)`?\\s*(\\([^;]+)', 'gi'),
+  regexTableName: new RegExp('create\\s+table\\s+`?(\\w+)`?', 'gi'),
   regexLine: new RegExp('`?(\\w+)`?\\s+(TINYINT|BIT|BOOL|SMALLINT|INT|INTEGER|BIGINT|FLOAT|FLOAT|DOUBLE|DOUBLE|REAL|DECIMAL|DEC|NUMERIC|CHAR|VARCHAR|TINYBLOB|TINYTEXT|BLOB|TEXT|MEDIUMBLOB|MEDIUMTEXT|LONGBLOB|LONGTEXT|ENUM|SET|DATETIME|DATE|TIMESTAMP|TIME|YEAR)(\\(\\d*\\))?\\s+(unsigned)?\\s*(not\\s+null)?\\s*(?:default\\s*[\'"]?([\\d-\\s:]+|\\w*)[\'"]?)?\\s*(?:auto_increment|\\s*primary\\s+key)*\\s*(?:on\\s+update\\s+current_timestamp\\s+)?(?:comment\\s+[\'"](.*)[\'"])?', 'i'),
   list: [],
   parse(str) {
     this.list = []
 
-    var table;
+    /*var table;
     while (table = this.regexCreate.exec(str)) {
       if (table.length < 3) {
         console.log("regex not match create sql:" + table)
@@ -36,8 +37,34 @@ var parse = {
       var obj = this._table2Obj(table[1], table[2])
 
       this.list.push(obj)
+    }*/
+    // read line by line
+    var lines = str.split('\n');
+    var tableStr = '';
+
+    for(var i=0; i< lines.length; i++) {
+
+      if (tableStr.trim().length == 0 ) {
+        tableStr = lines[i].trim() +'\n'
+      } else {
+        var line=lines[i].trim()
+        if (line.length == 0){
+          var table = this.regexTableName.exec(tableStr)
+          var obj = this._table2Obj(table[1], tableStr)
+          this.list.push(obj)
+          tableStr = ''
+        } else {
+          tableStr += line + '\n';
+        }
+
+      }
     }
-    console.log(this.list)
+    if (tableStr.length != 0) {
+      var table = this.regexTableName.exec(tableStr)
+      var obj = this._table2Obj(table[1], tableStr)
+      this.list.push(obj)
+    }
+
     return this.list
   },
   _table2Obj(name, body) {

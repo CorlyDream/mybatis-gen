@@ -16,7 +16,7 @@
     </el-form>
 
     <div class="box">
-      <sql-editor class="left-panel" @blur="textAreaBlur"></sql-editor>
+      <sql-editor class="left-panel" @blur="textAreaBlur" :table-str="tableStr"></sql-editor>
       <div class="right-panel">
         <el-collapse accordion>
           <el-collapse-item  v-for="(item,index) in parseObj" :key="index" :title="item.name + '.' + item.type">
@@ -61,23 +61,51 @@
   import Mapper from '@/utils/Mapper'
   import JSZip from 'jszip'
   import {saveAs} from 'file-saver'
-  console.log(saveAs)
 
   export default {
     name: 'app',
     components: {
       SqlEditor
     },
+
     data() {
+      var tableStr = 'CREATE TABLE `typecho_users` (\n' +
+        '  `uid` int(10) unsigned NOT NULL AUTO_INCREMENT,\n' +
+        '  `name` varchar(32) DEFAULT NULL COMMENT \'名称\',\n' +
+        '  `password` varchar(64) DEFAULT NULL COMMENT \'密码\',\n' +
+        '  `mail` varchar(200) DEFAULT NULL COMMENT \'邮箱\',\n' +
+        '  `url` varchar(200) DEFAULT NULL COMMENT \'url地址\',\n' +
+        '  `screen_name` varchar(32) DEFAULT NULL,\n' +
+        '  `created` int(10) unsigned DEFAULT \'0\',\n' +
+        '  `activated` int(10) unsigned DEFAULT \'0\',\n' +
+        '  `logged` int(10) unsigned DEFAULT \'0\',\n' +
+        '  `group` varchar(16) DEFAULT \'visitor\',\n' +
+        '  `auth_code` varchar(64) DEFAULT NULL,\n' +
+        '  PRIMARY KEY (`uid`),\n' +
+        '  UNIQUE KEY `name` (`name`),\n' +
+        '  UNIQUE KEY `mail` (`mail`)\n' +
+        ') ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;\n' +
+        '// 建表语句末尾必须有分号'
       return {
         list: [],
         showTable: false,
+        tableStr:tableStr,
         info: {
           entityPkg: "test",
           mapperPkg: "test",
           isToString: true
         },
         parseObj: []
+      }
+    },
+    created(){
+      var info = JSON.parse(localStorage.getItem("info"))
+      if (info){
+        this.info = info;
+      }
+      var tableStr = localStorage.getItem("tableStr");
+      if (tableStr){
+        this.tableStr = tableStr;
       }
     },
     computed: {
@@ -113,6 +141,9 @@
       textAreaBlur(newValue, changeObj) {
         this.list = SqlParse.parse(newValue);
         this.reparse();
+        // 缓存包配置和sql
+        localStorage.setItem("info", JSON.stringify(this.info));
+        localStorage.setItem("tableStr", newValue);
       },
       reparse(){
         this.parseObj = []

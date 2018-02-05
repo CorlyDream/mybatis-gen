@@ -1,24 +1,6 @@
 <template>
   <div>
-    <textarea id="sql-code" name="sql-code" >
-CREATE TABLE `typecho_users` (
-  `uid` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) DEFAULT NULL COMMENT '名称',
-  `password` varchar(64) DEFAULT NULL COMMENT '密码',
-  `mail` varchar(200) DEFAULT NULL COMMENT '邮箱',
-  `url` varchar(200) DEFAULT NULL COMMENT 'url地址',
-  `screen_name` varchar(32) DEFAULT NULL,
-  `created` int(10) unsigned DEFAULT '0',
-  `activated` int(10) unsigned DEFAULT '0',
-  `logged` int(10) unsigned DEFAULT '0',
-  `group` varchar(16) DEFAULT 'visitor',
-  `auth_code` varchar(64) DEFAULT NULL,
-  PRIMARY KEY (`uid`),
-  UNIQUE KEY `name` (`name`),
-  UNIQUE KEY `mail` (`mail`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-// 建表语句末尾必须有分号
-    </textarea>
+    <textarea id="sql-code" name="sql-code" v-model="tableStr"></textarea>
   </div>
 </template>
 <script>
@@ -33,6 +15,12 @@ CREATE TABLE `typecho_users` (
     name: "sql-editor",
     mounted(){
       this.init();
+    },
+    props: {
+      tableStr :{
+        type: String,
+        required: true
+      }
     },
     methods: {
       init(){

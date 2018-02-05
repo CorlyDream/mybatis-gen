@@ -6,7 +6,7 @@ export default {
     var name = toCamel(table.name, true);
     var str = `package ${entityPkg};\n\n` +
       'import java.io.Serializable;\n\n' +
-      'public class '+name + ' implements Serializable {\n\n' +
+      'public class '+name + 'Entity implements Serializable {\n\n' +
       '    private static final long serialVersionUID = 1L;\n';
     var properties = table.properties;
     var hasDateType = false;

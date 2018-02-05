@@ -27,7 +27,7 @@ export default {
     str += `<mapper namespace="${mapperPkg}.${mapperName}">\n`
     str += `  <resultMap id="BaseResultMap" type="${entityPkg}.${name}">\n`
     table.properties.forEach((item) => {
-      str += `    <result column="${item.name}" jdbcType="${item.type}" property="${toCamel(item.name)}" />\n`
+      str += `    <result column="${item.name}" property="${toCamel(item.name)}" />\n`
     })
     str += '  </resultMap>\n';
 
@@ -42,7 +42,7 @@ export default {
     str = str.slice(0, -1);
     str += '\n  </sql>\n'
 
-    str += `  <insert id="insertSelective">\n`;
+    str += `  <insert id="insertSelective" parameterType="${entityPkg}.${name}">\n`;
     str += `    INSERT INTO ${table.name}\n`;
     str += '    <trim prefix="(" suffix=")" suffixOverrides=",">\n';
     table.properties.forEach((item) => {
