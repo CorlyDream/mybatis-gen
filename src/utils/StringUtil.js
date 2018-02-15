@@ -20,7 +20,6 @@ export function toJavaType(type) {
     case 'BIT':
     case 'BOOL':
       return 'Boolean'
-    case 'TINYINT':
     case 'DATETIME':
     case 'DATE':
     case 'TIMESTAMP':
@@ -34,6 +33,7 @@ export function toJavaType(type) {
     case 'FLOAT':
     case 'FLOAT':
       return 'Float'
+    case 'TINYINT':
     case 'INT':
     case 'INTEGER':
       return 'Integer'
