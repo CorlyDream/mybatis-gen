@@ -21,8 +21,8 @@ function TableObject(name) {
 }
 
 var parse = {
-  regexCreate: new RegExp('create\\s+table\\s+`?(\\w+)`?\\s*(\\([^;]+)', 'gi'),
-  regexTableName: new RegExp('create\\s+table\\s+`?(\\w+)`?', 'gi'),
+  regexCreate: new RegExp('create\\s+table\\s+`?(\\w+)`?\\s*(\\([^;]+)', 'i'),
+  regexTableName: new RegExp('create\\s+table\\s+`?(\\w+)`?', 'i'),
   regexLine: new RegExp('`?(\\w+)`?\\s+(TINYINT|BIT|BOOL|SMALLINT|INT|INTEGER|BIGINT|FLOAT|FLOAT|DOUBLE|DOUBLE|REAL|DECIMAL|DEC|NUMERIC|CHAR|VARCHAR|TINYBLOB|TINYTEXT|BLOB|TEXT|MEDIUMBLOB|MEDIUMTEXT|LONGBLOB|LONGTEXT|ENUM|SET|DATETIME|DATE|TIMESTAMP|TIME|YEAR)(\\(\\d*\\))?\\s+(unsigned)?\\s*(not\\s+null)?\\s*(?:default\\s*[\'"]?([\\d-\\s:]+|\\w*)[\'"]?)?\\s*(?:auto_increment|\\s*primary\\s+key)*\\s*(?:on\\s+update\\s+current_timestamp\\s+)?(?:comment\\s+[\'"](.*)[\'"])?', 'i'),
   list: [],
   parse(str) {
@@ -49,6 +49,9 @@ var parse = {
       } else {
         var line=lines[i].trim()
         if (line.length == 0){
+          if (tableStr.length < 2) {
+            continue
+          }
           var table = this.regexTableName.exec(tableStr)
           var obj = this._table2Obj(table[1], tableStr)
           this.list.push(obj)
@@ -59,10 +62,12 @@ var parse = {
 
       }
     }
-    if (tableStr.length != 0) {
+    if (tableStr.length > 5) {
       var table = this.regexTableName.exec(tableStr)
-      var obj = this._table2Obj(table[1], tableStr)
-      this.list.push(obj)
+      if (table) {
+        var obj = this._table2Obj(table[1], tableStr)
+        this.list.push(obj)
+      }
     }
 
     return this.list
