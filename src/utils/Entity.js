@@ -17,6 +17,7 @@ export default {
                '     * ' + item.comment + '\n' +
                '     */\n'
       }
+      str += `    @TableField("${item.name}")\n`
       var type = toJavaType(item.type)
       if (type == 'Date'){
         hasDateType = true;
@@ -31,11 +32,11 @@ export default {
       var item = properties[i]
       var type = toJavaType(item.type)
       str += `    public void set${toCamel(item.name, true)}(${type} ${toCamel(item.name)}){\n`
-      str += `        this.${toCamel(item.name)} = ${toCamel(item.name)}\n`;
+      str += `        this.${toCamel(item.name)} = ${toCamel(item.name)};\n`;
       str += '    }\n\n'
 
       str += `    public ${type} get${toCamel(item.name, true)}(){\n`
-      str += `        return this.${toCamel(item.name)}\n`
+      str += `        return this.${toCamel(item.name)};\n`
       str += '    }\n\n'
     }
 
