@@ -2,7 +2,7 @@ import {toCamel,toJavaType} from "@/utils/StringUtil";
 
 
 export default {
-  parse: function (table, entityPkg) {
+  parse: function (table, entityPkg, isTableFiled) {
     var name = toCamel(table.name, true);
     var str = `package ${entityPkg};\n\n` +
       'import java.io.Serializable;\n\n' +
@@ -17,7 +17,9 @@ export default {
                '     * ' + item.comment + '\n' +
                '     */\n'
       }
-      str += `    @TableField("${item.name}")\n`
+      if (isTableFiled) {
+        str += `    @TableField("${item.name}")\n`;
+      }
       var type = toJavaType(item.type)
       if (type == 'Date'){
         hasDateType = true;

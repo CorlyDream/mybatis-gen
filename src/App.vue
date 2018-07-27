@@ -11,6 +11,15 @@
         <el-input v-model="info.mapperPkg" placeholder="mapper包名" @blur="reparse"></el-input>
       </el-form-item>
       <el-form-item>
+        <el-switch
+          v-model="info.isTableFiled"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          @change="reparse"
+          active-text="是否生成tableFiled注解">
+        </el-switch>
+      </el-form-item>
+      <el-form-item>
         <el-button type="primary" @click="downloadZip">下载</el-button>
       </el-form-item>
     </el-form>
@@ -93,7 +102,8 @@
         info: {
           entityPkg: "test",
           mapperPkg: "test",
-          isToString: true
+          isToString: true,
+          isTableFiled: true
         },
         parseObj: []
       }
@@ -148,7 +158,7 @@
       reparse(){
         this.parseObj = []
         this.list.forEach((item) => {
-          this.parseObj.push(Entity.parse(item, this.info.entityPkg))
+          this.parseObj.push(Entity.parse(item, this.info.entityPkg, this.info.isTableFiled))
           this.parseObj.push(Mapper.parseJava(item, this.info.entityPkg, this.info.mapperPkg));
           this.parseObj.push(Mapper.parseXML(item, this.info.entityPkg, this.info.mapperPkg));
         })
