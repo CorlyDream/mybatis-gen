@@ -152,10 +152,10 @@
         this.list = SqlParse.parse(newValue);
         this.reparse();
         // 缓存包配置和sql
-        localStorage.setItem("info", JSON.stringify(this.info));
         localStorage.setItem("tableStr", newValue);
       },
       reparse(){
+        localStorage.setItem("info", JSON.stringify(this.info));
         this.parseObj = []
         this.list.forEach((item) => {
           this.parseObj.push(Entity.parse(item, this.info.entityPkg, this.info.isTableFiled))
