@@ -2,12 +2,16 @@ import {toCamel,toJavaType} from "@/utils/StringUtil";
 
 
 export default {
-  parse: function (table, entityPkg, isTableFiled) {
-    var name = toCamel(table.name, true);
-    var str = `package ${entityPkg};\n\n` +
-      'import java.io.Serializable;\n\n' +
-      'public class '+name + 'Entity implements Serializable {\n\n' +
-      '    private static final long serialVersionUID = 1L;\n';
+  parse: function (table, entityPkg, isTableFiled, autoScf) {
+    var name = toCamel(table.name, true) + "Entity";
+    var str = `package ${entityPkg};\n\n`;
+    if (isTableFiled) {
+      str += `@TableName("${table.name}")\n`
+    }
+    if (autoScf) {
+      str += `@SCFSerializable\n`;
+    }
+    str += 'public class ' + name + 'Entity {\n\n';
     var properties = table.properties;
     var hasDateType = false;
     for (var i=0; i<properties.length; i++) {
@@ -20,7 +24,10 @@ export default {
       if (isTableFiled) {
         str += `    @TableField("${item.name}")\n`;
       }
-      var type = toJavaType(item.type)
+      if (autoScf) {
+        str += `    @SCFMember(orderId = ${i + 1})\n`;
+      }
+      var type = toJavaType(item.type);
       if (type == 'Date'){
         hasDateType = true;
       }
