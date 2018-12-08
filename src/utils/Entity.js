@@ -11,7 +11,7 @@ export default {
     if (autoScf) {
       str += `@SCFSerializable\n`;
     }
-    str += 'public class ' + name + 'Entity {\n\n';
+    str += 'public class ' + name + ' {\n\n';
     var properties = table.properties;
     var hasDateType = false;
     for (var i=0; i<properties.length; i++) {
