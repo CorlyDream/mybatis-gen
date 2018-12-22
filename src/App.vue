@@ -68,6 +68,14 @@
           <pre id="markdown">{{markdown}}</pre>
         </el-tab-pane>
       </el-tabs>
+      <span slot="footer" class="dialog-footer">
+        <el-switch
+          v-model="markdownCamel"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          active-text="是否生成驼峰">
+        </el-switch>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -79,6 +87,7 @@
   import Mapper from '@/utils/Mapper'
   import JSZip from 'jszip'
   import {saveAs} from 'file-saver'
+  import {toCamel} from "@/utils/StringUtil"
 
   export default {
     name: 'app',
@@ -106,6 +115,7 @@
         '// 建表语句末尾必须有分号'
       return {
         list: [],
+        markdownCamel: false,
         showTable: false,
         tableStr:tableStr,
         info: {
@@ -130,27 +140,31 @@
     },
     computed: {
       markdown: function() {
-        var str = ''
+        var str = '';
         for(var i=0; i<this.list.length; i++) {
-          var table = this.list[i]
-          str += (i+1)+'. '+table.name +'\n\n'
+          var table = this.list[i];
+          str += (i + 1) + '. ' + table.name + '\n\n';
           str += '| 名称 | 类型 | 默认值| 是否允许空| 备注 |\n' +
-                '| ---- | ---- | ---- | ----- | ---- |\n'
+            '| ---- | ---- | ---- | ----- | ---- |\n';
           for (var j=0; j<table.properties.length; j++) {
             var row = table.properties[j]
             var isNull = '否'
             if (row.isNull){
               isNull = '是'
             }
-            var defaultValue = '   '
+            var defaultValue = '   ';
             if (row.defaultValue) {
               defaultValue = row.defaultValue
             }
-            var comment = '   '
+            var comment = '   ';
             if (row.comment){
               comment = row.comment
             }
-            str += '|'+row.name + '|' + row.typeDesc + '|' + defaultValue +'|' + isNull +'|'+comment+'| \n'
+            var keyName = row.name;
+            if (this.markdownCamel) {
+              keyName = toCamel(row.name);
+            }
+            str += '|' + keyName + '|' + row.typeDesc + '|' + defaultValue + '|' + isNull + '|' + comment + '| \n';
           }
           str += '\n\n'
         }
