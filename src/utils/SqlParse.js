@@ -1,4 +1,5 @@
 function TableObject(name) {
+  this.nameSuffix = "Entity";
   this.name = name;
   this.properties = [];
   this.addProperty = function(source, name, type, typeDesc, isNull, defaultValue, comment, isUnsigned = false)

@@ -1,4 +1,4 @@
-import {toCamel,toJavaType} from "@/utils/StringUtil";
+import {toCamel} from "@/utils/StringUtil";
 
 export default {
   parseJava(table, entityPkg, mapperPkg){
@@ -6,10 +6,10 @@ export default {
     var mapperName = name +'Mapper';
     var str = `package ${mapperPkg};\n\n`;
     str += 'import java.util.List;\n';
-    str += `import ${entityPkg}.${name};\n\n`;
+    str += `import ${entityPkg}.${name+table.nameSuffix};\n\n`;
 
     str += `public interface ${mapperName}{\n\n`;
-    str += `    int insertSelective(${name} ${toCamel(table.name)});\n\n`;
+    str += `    int insertSelective(${name+ table.nameSuffix} ${toCamel(table.name)});\n\n`;
     // str += `    List<${name}> selectByExample(${name} ${toCamel(table.name)});\n\n`
     str += '}'
     return {
@@ -20,15 +20,15 @@ export default {
     }
   },
   parseXML(table, entityPkg, mapperPkg){
-    var name = toCamel(table.name, true)
+    var name = toCamel(table.name, true);
     var mapperName = name + "Mapper";
     var str = '<?xml version="1.0" encoding="UTF-8"?>\n' +
       '<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">\n'
-    str += `<mapper namespace="${mapperPkg}.${mapperName}">\n`
-    str += `  <resultMap id="BaseResultMap" type="${entityPkg}.${name}">\n`
+    str += `<mapper namespace="${mapperPkg}.${mapperName}">\n`;
+    str += `  <resultMap id="BaseResultMap" type="${entityPkg}.${name + table.nameSuffix}">\n`;
     table.properties.forEach((item) => {
       str += `    <result column="${item.name}" property="${toCamel(item.name)}" />\n`
-    })
+    });
     str += '  </resultMap>\n';
 
     str += '  <sql id="Base_Column_List">\n    ';
@@ -42,7 +42,7 @@ export default {
     str = str.slice(0, -1);
     str += '\n  </sql>\n'
 
-    str += `  <insert id="insertSelective" parameterType="${entityPkg}.${name}">\n`;
+    str += `  <insert id="insertSelective" parameterType="${entityPkg}.${name+ table.nameSuffix}">\n`;
     str += `    INSERT INTO ${table.name}\n`;
     str += '    <trim prefix="(" suffix=")" suffixOverrides=",">\n';
     table.properties.forEach((item) => {

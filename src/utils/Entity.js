@@ -3,7 +3,7 @@ import {toCamel,toJavaType} from "@/utils/StringUtil";
 
 export default {
   parse: function (table, entityPkg, isTableFiled, autoScf) {
-    var name = toCamel(table.name, true) + "Entity";
+    var name = toCamel(table.name, true) + table.nameSuffix;
     var str = `package ${entityPkg};\n\n`;
     if (isTableFiled) {
       str += `@TableName("${table.name}")\n`
