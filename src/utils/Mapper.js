@@ -10,6 +10,7 @@ export default {
 
     str += `public interface ${mapperName}{\n\n`;
     str += `    int insertSelective(${name+ table.nameSuffix} ${toCamel(table.name)});\n\n`;
+    str += `    int updateByIdSelective(${name+ table.nameSuffix} ${toCamel(table.name)});\n\n`;
     // str += `    List<${name}> selectByExample(${name} ${toCamel(table.name)});\n\n`
     str += '}'
     return {
@@ -47,16 +48,30 @@ export default {
     str += '    <trim prefix="(" suffix=")" suffixOverrides=",">\n';
     table.properties.forEach((item) => {
       str += `      <if test="${toCamel(item.name)} != null"> ${item.name},</if>\n`;
-    })
+    });
     str += '    </trim>\n'
     str += '    <trim prefix="values (" suffix=")" suffixOverrides=",">\n';
     table.properties.forEach((item) => {
       str += `      <if test="${toCamel(item.name)} != null"> #{${toCamel(item.name)}},</if>\n`;
-    })
+    });
     str += '    </trim>\n';
     str += '  </insert>\n';
 
+    str += '\n\n';
 
+    str += `  <update id="updateByIdSelective" parameterType="${entityPkg}.${name + table.nameSuffix}">\n`;
+    str += `    update ${table.name}\n`;
+    str += `    <set>\n`;
+
+    table.properties.forEach((item) => {
+      if (item != "id") {
+        str += `        <if test="${toCamel(item.name)} != null"> ${item.name} = #{${toCamel(item.name)}},</if>\n`;
+      }
+    });
+
+    str += `    </set>\n`;
+    str += `    WHERE id=#{id}\n`;
+    str += `  </update>\n`;
     str += '</mapper>';
 
     return {
