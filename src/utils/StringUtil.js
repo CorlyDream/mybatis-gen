@@ -36,6 +36,7 @@ export function toJavaType(type) {
     case 'FLOAT':
       return 'Float'
     case 'TINYINT':
+    case 'MEDIUMINT':
     case 'INT':
     case 'INTEGER':
       return 'Integer'
