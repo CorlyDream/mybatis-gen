@@ -204,7 +204,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="css">
   .form-inline {
     margin: 15px;
   }
