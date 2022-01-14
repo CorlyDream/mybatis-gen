@@ -14,6 +14,7 @@ export default {
     str += 'public class ' + name + ' {\n\n';
     var properties = table.properties;
     var hasDateType = false;
+    var hasBigDecimal = false;
     for (var i=0; i<properties.length; i++) {
       var item = properties[i];
       if (item.comment){
@@ -31,10 +32,16 @@ export default {
       if (type == 'Date'){
         hasDateType = true;
       }
+      if (type == 'BigDecimal') {
+        hasBigDecimal = true;
+      }
       str += `    private ${type} ${toCamel(item.name)};\n\n`
     }
     if (hasDateType){
       str = 'import java.util.Date;\n' + str;
+    }
+    if (hasBigDecimal) {
+      str = 'import java.math.BigDecimal;\n' + str;
     }
 
     for(var i=0; i<properties.length; i++) {
