@@ -174,7 +174,6 @@
     methods: {
       textAreaBlur(newValue, changeObj) {
         this.list = SqlParse.parse(newValue);
-        debugger;
         this.reparse();
         // 缓存包配置和sql
         localStorage.setItem("tableStr", newValue);
