@@ -2,9 +2,16 @@ import {toCamel,toJavaType} from "@/utils/StringUtil";
 
 
 export default {
-  parse: function (table, entityPkg, isTableFiled, autoScf) {
+  parse: function (table, entityPkg, isTableFiled, autoScf, lombok) {
     var name = toCamel(table.name, true) + table.nameSuffix;
-    var str = `package ${entityPkg};\n\n`;
+    var str = '';
+    if(isTableFiled){
+      str += 'import com.baomidou.mybatisplus.annotation.TableField;\n' +
+            'import com.baomidou.mybatisplus.annotation.TableName;\n';
+    }
+    if (lombok) {
+      str += 'import lombok.Data;\n\n@Data\n';
+    }
     if (isTableFiled) {
       str += `@TableName("${table.name}")\n`
     }
@@ -43,17 +50,19 @@ export default {
     if (hasBigDecimal) {
       str = 'import java.math.BigDecimal;\n' + str;
     }
-
-    for(var i=0; i<properties.length; i++) {
-      var item = properties[i]
-      var type = toJavaType(item.type)
-      str += `    public void set${toCamel(item.name, true)}(${type} ${toCamel(item.name)}){\n`
-      str += `        this.${toCamel(item.name)} = ${toCamel(item.name)};\n`;
-      str += '    }\n\n'
-
-      str += `    public ${type} get${toCamel(item.name, true)}(){\n`
-      str += `        return this.${toCamel(item.name)};\n`
-      str += '    }\n\n'
+    str = `package ${entityPkg};\n\n${str}`;
+    if(!lombok) {
+      for(var i=0; i<properties.length; i++) {
+        var item = properties[i]
+        var type = toJavaType(item.type)
+        str += `    public void set${toCamel(item.name, true)}(${type} ${toCamel(item.name)}){\n`
+        str += `        this.${toCamel(item.name)} = ${toCamel(item.name)};\n`;
+        str += '    }\n\n'
+  
+        str += `    public ${type} get${toCamel(item.name, true)}(){\n`
+        str += `        return this.${toCamel(item.name)};\n`
+        str += '    }\n\n'
+      }
     }
 
     str += '}'

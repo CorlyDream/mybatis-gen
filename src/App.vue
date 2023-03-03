@@ -12,6 +12,13 @@
       </el-form-item>
       <el-form-item>
         <el-switch
+          v-model="info.lombok"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          @change="reparse"
+          active-text="lombok">
+        </el-switch>
+        <el-switch
           v-model="info.isTableFiled"
           active-color="#13ce66"
           inactive-color="#ff4949"
@@ -123,7 +130,8 @@
           mapperPkg: "test",
           isToString: true,
           isTableFiled: true,
-          autoScf: false
+          autoScf: false,
+          lombok: false,
         },
         parseObj: []
       }
@@ -182,9 +190,11 @@
         localStorage.setItem("info", JSON.stringify(this.info));
         this.parseObj = []
         this.list.forEach((item) => {
-          this.parseObj.push(Entity.parse(item, this.info.entityPkg, this.info.isTableFiled, this.info.autoScf));
-          this.parseObj.push(Mapper.parseJava(item, this.info.entityPkg, this.info.mapperPkg));
-          this.parseObj.push(Mapper.parseXML(item, this.info.entityPkg, this.info.mapperPkg));
+          this.parseObj.push(Entity.parse(item, this.info.entityPkg, this.info.isTableFiled, this.info.autoScf, this.info.lombok));
+          this.parseObj.push(Mapper.parseJava(item, this.info.entityPkg, this.info.mapperPkg, this.info.isTableFiled));
+          if(!this.info.isTableFiled){
+            this.parseObj.push(Mapper.parseXML(item, this.info.entityPkg, this.info.mapperPkg));
+          }
         })
       },
       downloadZip(){

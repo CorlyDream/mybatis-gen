@@ -1,16 +1,28 @@
 import {toCamel} from "@/utils/StringUtil";
 
 export default {
-  parseJava(table, entityPkg, mapperPkg){
+  parseJava(table, entityPkg, mapperPkg, isTableFiled){
     var name = toCamel(table.name, true);
     var mapperName = name +'Mapper';
     var str = `package ${mapperPkg};\n\n`;
-    str += 'import java.util.List;\n';
-    str += `import ${entityPkg}.${name+table.nameSuffix};\n\n`;
+    str += `import ${entityPkg}.${name+table.nameSuffix};\n`;
+    if(isTableFiled){
+      str += 'import com.baomidou.mybatisplus.core.mapper.BaseMapper;\n';
+    }else{
+      str += 'import java.util.List;\n';
+    }
+    str += '\n';
 
-    str += `public interface ${mapperName}{\n\n`;
-    str += `    int insertSelective(${name+ table.nameSuffix} ${toCamel(table.name)});\n\n`;
-    str += `    int updateByIdSelective(${name+ table.nameSuffix} ${toCamel(table.name)});\n\n`;
+    str += `public interface ${mapperName} `
+    if(isTableFiled){
+      str += 'extends BaseMapper<'+name+'Entity>';
+    }
+    str += ' {\n\n';
+    if(!isTableFiled){
+      str += `    int insertSelective(${name+ table.nameSuffix} ${toCamel(table.name)});\n\n`;
+      str += `    int updateByIdSelective(${name+ table.nameSuffix} ${toCamel(table.name)});\n\n`;
+    }
+
     // str += `    List<${name}> selectByExample(${name} ${toCamel(table.name)});\n\n`
     str += '}'
     return {
